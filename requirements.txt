@@ -25,7 +25,6 @@ lxml==4.9.2
 MarkupSafe==2.1.2
 opencv-python==4.7.0.72
 openpyxl==3.1.2
-pandas==2.0.1
 pdf2docx==0.5.6
 pdf2image==1.16.3
 pdf2xlsx==1.2.0
