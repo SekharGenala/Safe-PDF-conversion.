@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, send_file, send_fro
 import os
 import pdf2docx
 from werkzeug.utils import secure_filename
-import pythoncom
 from docx2pdf import convert
 from PIL import Image
 from fpdf import FPDF
