@@ -11,7 +11,7 @@ import pandas as pd
 import fpdf
 from docx import Document
 
-
+from word import ALLOWED_EXTENSIONS
 
 app = Flask(__name__)
 
