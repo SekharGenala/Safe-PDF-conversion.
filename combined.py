@@ -3,7 +3,7 @@ import os
 import pdf2docx
 from werkzeug.utils import secure_filename
 from docx2pdf import convert
-import openpyxl
+import comtypes
 from PIL import Image
 from fpdf import FPDF
 from pdf2image import convert_from_path
