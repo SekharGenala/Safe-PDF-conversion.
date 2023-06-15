@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_file
 from docx2pdf import convert
-import pythoncom
+import win32com.client as pythoncom
 import os
 
 
