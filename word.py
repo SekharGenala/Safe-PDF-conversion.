@@ -11,8 +11,8 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 def word():
     return render_template('word.html')
 
-@app.route('/converte', methods=['POST'])
-def converte():
+@app.route('/', methods=['POST'])
+def contact():
     # Get the uploaded file
     file = request.files['file']
 
