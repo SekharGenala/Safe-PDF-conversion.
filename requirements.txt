@@ -55,3 +55,10 @@ Werkzeug==2.1.0
 zope.event==4.6
 zope.interface==6.0
 gunicorn==19.7.1
+pywinrm==0.4.3
+pyspnego==0.9.1
+requests-2.31.0
+requests==2.31.0
+requests-ntlm==1.2.0
+urllib3==2.0.3
+xmltodict==0.13.0
