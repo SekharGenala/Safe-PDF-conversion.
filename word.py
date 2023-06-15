@@ -1,43 +1,41 @@
-from flask import Flask, render_template, request, send_file
-from docx2pdf import convert
-import openpyxl
-import pythoncom
-import subprocess
-import os
-
-
-
-
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'docx'}
+from flask import Flask, render_template, request, send_from_directory
+from docx import Document
+from fpdf import FPDF
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# Set the path for uploading files
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 @app.route('/word')
 def word():
     return render_template('word.html')
 
-@app.route('/', methods=['POST'])
-def upload_file():
+@app.route('/convert', methods=['POST'])
+def convert():
+    # Get the uploaded file
     file = request.files['file']
-    if file and allowed_file(file.filename):
-        filename = file.filename
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        output_filename = os.path.splitext(filename)[0] + '.pdf'
-        pythoncom.CoInitialize()
-        convert(os.path.join(app.config['UPLOAD_FOLDER'], filename), os.path.join(app.config['UPLOAD_FOLDER'], output_filename))
-        return render_template('download_word.html', filename=output_filename)
-    else:
-        return "Invalid file format. Please upload a .docx file."
 
-@app.route('/download/<filename>', methods=['GET'])
+    # Save the file to the uploads folder
+    file.save(f"{app.config['UPLOAD_FOLDER']}/{file.filename}")
+
+    # Convert the Word document to PDF
+    doc = Document(f"{app.config['UPLOAD_FOLDER']}/{file.filename}")
+    pdf = FPDF()
+    
+    for para in doc.paragraphs:
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(0, 10, txt=para.text, ln=1)
+
+    pdf.output(f"{app.config['UPLOAD_FOLDER']}/{file.filename.split('.')[0]}.pdf")
+
+    return render_template('download_word.html', filename=file.filename)
+
+@app.route('/download/<path:filename>', methods=['GET'])
 def download(filename):
-    return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename), as_attachment=True)
+    # Serve the converted PDF file for download
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
