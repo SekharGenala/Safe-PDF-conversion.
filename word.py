@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_file
 from docx2pdf import convert
 import openpyxl
-import comtypes.client
+import subprocess
 import os
 
 
