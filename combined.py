@@ -3,7 +3,7 @@ import os
 import pdf2docx
 from werkzeug.utils import secure_filename
 from docx2pdf import convert
-import pythoncom
+from docx import Document
 import subprocess
 import openpyxl
 from PIL import Image
@@ -34,11 +34,6 @@ def home():
 @app.route('/upload')
 def index():
     return render_template('index.html')
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/word')
@@ -98,19 +93,26 @@ def upload_file():
     return send_file(docx_file_path, as_attachment=True)
 
 
-@app.route('/', methods=['POST'])
-def upload_word_file():
+@app.route('/converte', methods=['POST'])
+def converte():
+    # Get the uploaded file
     file = request.files['file']
-    if file and allowed_file(file.filename):
-        filename = file.filename
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        output_filename = os.path.splitext(filename)[0] + '.pdf'
-        pythoncom.CoInitialize()
-        
-        return render_template('download_word.html', filename=output_filename)
-    else:
-        return "Invalid file format. Please upload a .docx file."
 
+    # Save the file to the uploads folder
+    file.save(f"{app.config['UPLOAD_FOLDER']}/{file.filename}")
+
+    # Convert the Word document to PDF
+    doc = Document(f"{app.config['UPLOAD_FOLDER']}/{file.filename}")
+    pdf = FPDF()
+    
+    for para in doc.paragraphs:
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(0, 10, txt=para.text, ln=1)
+
+    pdf.output(f"{app.config['UPLOAD_FOLDER']}/{file.filename.split('.')[0]}.pdf")
+
+    return render_template('download.html', filename=file.filename)
 
 
 @app.route('/convert', methods=['POST'])
