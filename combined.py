@@ -2,10 +2,8 @@ from flask import Flask, render_template, request, redirect, send_file, send_fro
 import os
 import pdf2docx
 from werkzeug.utils import secure_filename
-from docx2pdf import convert
 from docx import Document
-import subprocess
-import openpyxl
+from docx2pdf import convert
 from PIL import Image
 from fpdf import FPDF
 from pdf2image import convert_from_path
@@ -93,8 +91,8 @@ def upload_file():
     return send_file(docx_file_path, as_attachment=True)
 
 
-@app.route('/converte', methods=['POST'])
-def converte():
+@app.route('/', methods=['POST'])
+def contact():
     # Get the uploaded file
     file = request.files['file']
 
@@ -112,7 +110,8 @@ def converte():
 
     pdf.output(f"{app.config['UPLOAD_FOLDER']}/{file.filename.split('.')[0]}.pdf")
 
-    return render_template('download.html', filename=file.filename)
+    return render_template('download_word.html', filename=file.filename)
+
 
 
 @app.route('/convert', methods=['POST'])
@@ -249,4 +248,4 @@ def allowed_file(filename):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
